@@ -1,8 +1,14 @@
-const CACHE_NAME = 'pro-max-v1';
+const CACHE_NAME = 'citizen-pro-v3';
 const assets = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(assets)));
+});
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil(caches.keys().then((keys) => {
+    return Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)));
+  }));
 });
 
 self.addEventListener('fetch', (e) => {
