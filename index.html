@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="manifest.json">
+    <title>Citizen Pro Max</title>
+    
+    <style>
+        :root {
+            --bg: #0a0a0a; --card: #000; --text: #fff;
+            --primary: #00ffcc; --accent: #cc66ff; --border: #333;
+        }
+
+        .light-mode {
+            --bg: #f0f2f5; --card: #ffffff; --text: #1a1a1a;
+            --primary: #007bff; --accent: #6610f2; --border: #ddd;
+        }
+
+        body { background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; transition: 0.3s; display: flex; flex-direction: column; align-items: center; }
+
+        /* Navigation */
+        .nav { width: 100%; display: flex; justify-content: center; gap: 10px; padding: 15px; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+        .nav button { padding: 8px 15px; border: none; border-radius: 20px; background: var(--border); color: var(--text); cursor: pointer; font-weight: bold; }
+        .nav button.active { background: var(--primary); color: #000; box-shadow: 0 0 10px var(--primary); }
+
+        .theme-btn { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; border-radius: 50%; background: var(--primary); border: none; cursor: pointer; font-size: 20px; z-index: 200; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+
+        /* Containers */
+        .page { display: none; width: 360px; padding: 20px; animation: fadeIn 0.4s; }
+        .active-page { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Calculator Styles */
+        .calculator { background: var(--card); padding: 20px; border-radius: 25px; border: 3px solid var(--border); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .display-container { position: relative; background: #1a1a1a; border: 2px solid var(--primary); border-radius: 12px; margin-bottom: 15px; box-shadow: 0 0 15px var(--primary); }
+        #display { width: 100%; height: 70px; font-size: 30px; text-align: right; padding: 15px; background: transparent; color: var(--primary); border: none; outline: none; font-family: monospace; box-sizing: border-box; }
+        
+        .buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        button { height: 45px; cursor: pointer; border: none; border-radius: 8px; background: #222; color: white; font-weight: bold; transition: 0.1s; }
+        button:active { transform: scale(0.92); }
+
+        .btn-red { background: #ff4d4d; }
+        .btn-accent { color: var(--accent); border: 1px solid var(--accent); }
+        .btn-orange { color: #ffa500; border: 1px solid #ffa500; }
+        .btn-equal { color: var(--primary); border: 1px solid var(--primary); }
+
+        /* Dashboard Styles */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center; }
+        .stat-card h3 { font-size: 12px; color: #888; margin: 0; }
+        .stat-card p { font-size: 20px; font-weight: bold; margin: 5px 0; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+<div class="nav">
+    <button id="nav-calc" class="active" onclick="switchPage('calc')">Calculator</button>
+    <button id="nav-dash" onclick="switchPage('dash')">Dashboard</button>
+</div>
+
+<button class="theme-btn" onclick="toggleTheme()">🌓</button>
+
+<div id="calc-page" class="page active-page">
+    <div class="calculator">
+        <div class="display-container">
+            <input type="text" id="display" value="0" readonly>
+        </div>
+        <div class="buttons">
+            <button class="btn-accent" onclick="playClick(); checkBackward()">◀ CHK</button>
+            <button class="btn-accent" onclick="playClick(); checkForward()">CHK ▶</button>
+            <button class="btn-orange" onclick="playClick(); markUP()">MU</button>
+            <button class="btn-red" onclick="playClick(); clearAll()">AC</button>
+
+            <button class="btn-accent" onclick="playClick(); scientific('sin')">sin</button>
+            <button class="btn-accent" onclick="playClick(); scientific('cos')">cos</button>
+            <button class="btn-accent" onclick="playClick(); scientific('tan')">tan</button>
+            <button class="btn-accent" onclick="playClick(); scientific('sqrt')">√</button>
+
+            <button class="btn-orange" onclick="playClick(); mPlusEqual()">M+</button>
+            <button class="btn-orange" onclick="playClick(); mMinusEqual()">M-</button>
+            <button class="btn-orange" onclick="playClick(); mCheck()">MRC</button>
+            <button class="btn-orange" onclick="playClick(); press('/')">÷</button>
+
+            <button onclick="press('7')">7</button>
+            <button onclick="press('8')">8</button>
+            <button onclick="press('9')">9</button>
+            <button class="btn-orange" onclick="press('*')">×</button>
+
+            <button onclick="press('4')">4</button>
+            <button onclick="press('5')">5</button>
+            <button onclick="press('6')">6</button>
+            <button class="btn-orange" onclick="press('-')">-</button>
+
+            <button onclick="press('1')">1</button>
+            <button onclick="press('2')">2</button>
+            <button onclick="press('3')">3</button>
+            <button class="btn-orange" onclick="press('+')">+</button>
+
+            <button onclick="press('0')">0</button>
+            <button onclick="press('00')">00</button>
+            <button onclick="press('.')">.</button>
+            <button class="btn-equal" onclick="calculate()">=</button>
+            
+            <button style="grid-column: span 4; color: var(--primary);" onclick="addAsIncome()">💰 Add to Income</button>
+        </div>
+    </div>
+</div>
+
+<div id="dash-page" class="page">
+    <div class="stats-grid">
+        <div class="stat-card"><h3>TOTAL INCOME</h3><p id="dash-in">₹0</p></div>
+        <div class="stat-card"><h3>GT TOTAL</h3><p id="dash-gt">₹0</p></div>
+    </div>
+    <h3>Recent Calculations</h3>
+    <div id="history-list" style="font-size: 14px; background: var(--card); padding: 10px; border-radius: 10px;"></div>
+</div>
+
+<script>
+    let income = 0, gtMemory = 0, historyLog = [], shouldReset = false, audioCtx = null;
+    const screen = document.getElementById('display');
+
+    function switchPage(p) {
+        document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active-page'));
+        document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(p + '-page').classList.add('active-page');
+        document.getElementById('nav-' + p).classList.add('active');
+    }
+
+    function toggleTheme() { document.body.classList.toggle('light-mode'); }
+
+    async function playClick() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.frequency.setValueAtTime(1000, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+    }
+
+    function press(v) { 
+        playClick();
+        if (shouldReset) { screen.value = ""; shouldReset = false; }
+        if (screen.value === "0" && v !== ".") screen.value = "";
+        screen.value += v;
+    }
+
+    function calculate() {
+        playClick();
+        try {
+            let res = eval(screen.value.replace(/×/g, '*').replace(/÷/g, '/'));
+            gtMemory += res;
+            historyLog.unshift(screen.value + " = " + res);
+            updateUI();
+            screen.value = res;
+            shouldReset = true;
+        } catch { screen.value = "Error"; }
+    }
+
+    function addAsIncome() {
+        playClick();
+        income += parseFloat(screen.value) || 0;
+        updateUI();
+        alert("Added to Dashboard!");
+    }
+
+    function updateUI() {
+        document.getElementById('dash-in').innerText = "₹" + income;
+        document.getElementById('dash-gt').innerText = "₹" + gtMemory;
+        document.getElementById('history-list').innerHTML = historyLog.slice(0,5).map(h => `<div>${h}</div>`).join('');
+    }
+
+    function clearAll() { screen.value = "0"; historyLog = []; updateUI(); }
+    
+    // SW Register
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+</script>
+</body>
+</html>
