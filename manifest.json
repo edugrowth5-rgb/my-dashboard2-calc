@@ -1,9 +1,9 @@
 {
-  "name": "Citizen Pro Max",
-  "short_name": "ProMax",
+  "name": "Citizen Pro Max Plus",
+  "short_name": "CitizenPro",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#0a0a0a",
+  "background_color": "#000000",
   "theme_color": "#00ffcc",
   "icons": [
     {
