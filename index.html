@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
     <link rel="manifest" href="manifest.json">
-    <title>Citizen Pro Max</title>
+    <title>Citizen Pro Max Plus</title>
     
     <style>
         :root {
@@ -17,39 +20,39 @@
             --primary: #007bff; --accent: #6610f2; --border: #ddd;
         }
 
-        body { background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; transition: 0.3s; display: flex; flex-direction: column; align-items: center; }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; transition: 0.3s; display: flex; flex-direction: column; align-items: center; overflow-x: hidden; touch-action: manipulation; }
 
-        /* Navigation */
         .nav { width: 100%; display: flex; justify-content: center; gap: 10px; padding: 15px; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
         .nav button { padding: 8px 15px; border: none; border-radius: 20px; background: var(--border); color: var(--text); cursor: pointer; font-weight: bold; }
         .nav button.active { background: var(--primary); color: #000; box-shadow: 0 0 10px var(--primary); }
 
         .theme-btn { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; border-radius: 50%; background: var(--primary); border: none; cursor: pointer; font-size: 20px; z-index: 200; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
 
-        /* Containers */
-        .page { display: none; width: 360px; padding: 20px; animation: fadeIn 0.4s; }
+        .page { display: none; width: 95%; max-width: 380px; padding: 20px 10px; animation: fadeIn 0.4s; }
         .active-page { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Calculator Styles */
-        .calculator { background: var(--card); padding: 20px; border-radius: 25px; border: 3px solid var(--border); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .display-container { position: relative; background: #1a1a1a; border: 2px solid var(--primary); border-radius: 12px; margin-bottom: 15px; box-shadow: 0 0 15px var(--primary); }
-        #display { width: 100%; height: 70px; font-size: 30px; text-align: right; padding: 15px; background: transparent; color: var(--primary); border: none; outline: none; font-family: monospace; box-sizing: border-box; }
+        .calculator { background: var(--card); padding: 15px; border-radius: 25px; border: 3px solid var(--border); box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        .display-container { position: relative; background: #111; border: 2px solid var(--primary); border-radius: 12px; margin-bottom: 15px; box-shadow: 0 0 15px var(--primary), inset 0 0 5px var(--primary); }
         
-        .buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        button { height: 45px; cursor: pointer; border: none; border-radius: 8px; background: #222; color: white; font-weight: bold; transition: 0.1s; }
-        button:active { transform: scale(0.92); }
+        #mem-ind, #gt-ind { position: absolute; top: 5px; font-size: 11px; font-weight: bold; visibility: hidden; }
+        #mem-ind { left: 10px; color: var(--accent); }
+        #gt-ind { left: 35px; color: #33ff33; }
 
-        .btn-red { background: #ff4d4d; }
+        #display { width: 100%; height: 75px; font-size: 35px; text-align: right; padding: 25px 15px 5px 15px; background: transparent; color: var(--primary); border: none; outline: none; font-family: 'Courier New', monospace; box-sizing: border-box; text-shadow: 0 0 8px var(--primary); }
+        
+        .buttons { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        button { height: 48px; cursor: pointer; border: none; border-radius: 10px; background: #222; color: white; font-size: 14px; font-weight: bold; transition: 0.1s; -webkit-tap-highlight-color: transparent; }
+        button:active { transform: scale(0.92); filter: brightness(1.3); }
+
+        .btn-red { background: #ff4d4d; color: white; }
         .btn-accent { color: var(--accent); border: 1px solid var(--accent); }
         .btn-orange { color: #ffa500; border: 1px solid #ffa500; }
-        .btn-equal { color: var(--primary); border: 1px solid var(--primary); }
+        .btn-equal { background: #1a1a1a; color: #33ff33; border: 1px solid #33ff33; box-shadow: 0 0 10px #33ff33; }
+        .btn-income { grid-column: span 5; margin-top: 10px; background: transparent; color: var(--primary); border: 1px dashed var(--primary); height: 40px; }
 
-        /* Dashboard Styles */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .stat-card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center; }
-        .stat-card h3 { font-size: 12px; color: #888; margin: 0; }
-        .stat-card p { font-size: 20px; font-weight: bold; margin: 5px 0; color: var(--primary); }
+        .stat-card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center; margin-bottom: 10px; }
+        .history-item { padding: 10px; border-bottom: 1px solid var(--border); font-family: monospace; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -64,61 +67,74 @@
 <div id="calc-page" class="page active-page">
     <div class="calculator">
         <div class="display-container">
+            <span id="mem-ind">M</span>
+            <span id="gt-ind">GT</span>
             <input type="text" id="display" value="0" readonly>
         </div>
         <div class="buttons">
-            <button class="btn-accent" onclick="playClick(); checkBackward()">◀ CHK</button>
-            <button class="btn-accent" onclick="playClick(); checkForward()">CHK ▶</button>
-            <button class="btn-orange" onclick="playClick(); markUP()">MU</button>
-            <button class="btn-red" onclick="playClick(); clearAll()">AC</button>
+            <button class="btn-accent" onclick="checkBackward()">◀ CHK</button>
+            <button class="btn-accent" onclick="checkForward()">CHK ▶</button>
+            <button class="btn-orange" onclick="markUP()">MU</button>
+            <button class="btn-orange" onclick="showGT()">GT</button>
+            <button class="btn-red" onclick="clearAll()">AC</button>
 
-            <button class="btn-accent" onclick="playClick(); scientific('sin')">sin</button>
-            <button class="btn-accent" onclick="playClick(); scientific('cos')">cos</button>
-            <button class="btn-accent" onclick="playClick(); scientific('tan')">tan</button>
-            <button class="btn-accent" onclick="playClick(); scientific('sqrt')">√</button>
+            <button class="btn-accent" onclick="scientific('sin')">sin</button>
+            <button class="btn-accent" onclick="scientific('cos')">cos</button>
+            <button class="btn-accent" onclick="scientific('tan')">tan</button>
+            <button class="btn-accent" onclick="scientific('pi')">π</button>
+            <button class="btn-red" onclick="backspace()">⌫</button>
 
-            <button class="btn-orange" onclick="playClick(); mPlusEqual()">M+</button>
-            <button class="btn-orange" onclick="playClick(); mMinusEqual()">M-</button>
-            <button class="btn-orange" onclick="playClick(); mCheck()">MRC</button>
-            <button class="btn-orange" onclick="playClick(); press('/')">÷</button>
+            <button class="btn-orange" onclick="mPlusEqual()">M+=</button>
+            <button class="btn-orange" onclick="mMinusEqual()">M-=</button>
+            <button class="btn-orange" onclick="mCheck()">MRC</button>
+            <button class="btn-orange" onclick="scientific('sqrt')">√</button>
+            <button class="btn-orange" onclick="press('/')">÷</button>
 
             <button onclick="press('7')">7</button>
             <button onclick="press('8')">8</button>
             <button onclick="press('9')">9</button>
+            <button class="btn-orange" onclick="press('%')">%</button>
             <button class="btn-orange" onclick="press('*')">×</button>
 
             <button onclick="press('4')">4</button>
             <button onclick="press('5')">5</button>
             <button onclick="press('6')">6</button>
+            <button class="btn-orange" onclick="plusMinus()">+/-</button>
             <button class="btn-orange" onclick="press('-')">-</button>
 
             <button onclick="press('1')">1</button>
             <button onclick="press('2')">2</button>
             <button onclick="press('3')">3</button>
+            <button class="btn-equal" style="grid-row: span 2; height: auto;" onclick="calculate()">=</button>
             <button class="btn-orange" onclick="press('+')">+</button>
 
             <button onclick="press('0')">0</button>
             <button onclick="press('00')">00</button>
             <button onclick="press('.')">.</button>
-            <button class="btn-equal" onclick="calculate()">=</button>
+            <button class="btn-orange">⚙</button>
             
-            <button style="grid-column: span 4; color: var(--primary);" onclick="addAsIncome()">💰 Add to Income</button>
+            <button class="btn-income" onclick="addAsIncome()">💰 Add to Dashboard Income</button>
         </div>
     </div>
 </div>
 
 <div id="dash-page" class="page">
-    <div class="stats-grid">
-        <div class="stat-card"><h3>TOTAL INCOME</h3><p id="dash-in">₹0</p></div>
-        <div class="stat-card"><h3>GT TOTAL</h3><p id="dash-gt">₹0</p></div>
-    </div>
-    <h3>Recent Calculations</h3>
-    <div id="history-list" style="font-size: 14px; background: var(--card); padding: 10px; border-radius: 10px;"></div>
+    <div class="stat-card"><h3>TOTAL INCOME</h3><p id="dash-in" style="font-size: 24px; color: var(--primary);">₹0</p></div>
+    <div class="stat-card"><h3>GRAND TOTAL (GT)</h3><p id="dash-gt" style="font-size: 24px; color: #33ff33;">₹0</p></div>
+    <h3 style="margin-top:20px;">Recent History</h3>
+    <div id="history-list" style="background: var(--card); border-radius: 10px; padding: 10px; border: 1px solid var(--border);"></div>
 </div>
 
 <script>
-    let income = 0, gtMemory = 0, historyLog = [], shouldReset = false, audioCtx = null;
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js'); });
+    }
+
+    let income = 0, gtMemory = 0, mMemory = 0, historyLog = [], shouldReset = false, audioCtx = null;
+    let checkIndex = -1;
     const screen = document.getElementById('display');
+    const mInd = document.getElementById('mem-ind');
+    const gtInd = document.getElementById('gt-ind');
 
     function switchPage(p) {
         document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active-page'));
@@ -131,10 +147,11 @@
 
     async function playClick() {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') await audioCtx.resume();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.frequency.setValueAtTime(1000, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.02, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
         osc.connect(gain); gain.connect(audioCtx.destination);
         osc.start(); osc.stop(audioCtx.currentTime + 0.05);
     }
@@ -142,39 +159,85 @@
     function press(v) { 
         playClick();
         if (shouldReset) { screen.value = ""; shouldReset = false; }
-        if (screen.value === "0" && v !== ".") screen.value = "";
+        if (screen.value === "0" && v !== "." && v !== "00") screen.value = "";
         screen.value += v;
+    }
+
+    function backspace() {
+        playClick();
+        screen.value = screen.value.slice(0, -1) || "0";
     }
 
     function calculate() {
         playClick();
+        if (screen.value === "0" || screen.value === "") return;
         try {
-            let res = eval(screen.value.replace(/×/g, '*').replace(/÷/g, '/'));
-            gtMemory += res;
-            historyLog.unshift(screen.value + " = " + res);
-            updateUI();
-            screen.value = res;
-            shouldReset = true;
+            let expr = screen.value.replace(/×/g, '*').replace(/÷/g, '/');
+            let res = eval(expr);
+            if (!isNaN(res)) {
+                gtMemory += res;
+                gtInd.style.visibility = "visible";
+                historyLog.unshift(screen.value + " = " + res);
+                updateUI();
+                screen.value = res;
+                shouldReset = true;
+                checkIndex = -1;
+            }
         } catch { screen.value = "Error"; }
     }
+
+    function mPlusEqual() { calculate(); mMemory += parseFloat(screen.value); mInd.style.visibility = "visible"; }
+    function mMinusEqual() { calculate(); mMemory -= parseFloat(screen.value); mInd.style.visibility = "visible"; }
+    
+    let mrcClicks = 0;
+    function mCheck() {
+        playClick();
+        mrcClicks++;
+        screen.value = mMemory;
+        shouldReset = true;
+        setTimeout(() => {
+            if (mrcClicks >= 2) { mMemory = 0; mInd.style.visibility = "hidden"; }
+            mrcClicks = 0;
+        }, 500);
+    }
+
+    function showGT() { playClick(); screen.value = gtMemory; shouldReset = true; }
+
+    function plusMinus() {
+        playClick();
+        screen.value = screen.value.startsWith("-") ? screen.value.slice(1) : "-" + screen.value;
+    }
+
+    function scientific(type) {
+        playClick();
+        let v = parseFloat(screen.value);
+        if(type === 'sin') screen.value = Math.sin(v * Math.PI/180).toFixed(4);
+        if(type === 'cos') screen.value = Math.cos(v * Math.PI/180).toFixed(4);
+        if(type === 'tan') screen.value = Math.tan(v * Math.PI/180).toFixed(4);
+        if(type === 'pi') screen.value = Math.PI.toFixed(6);
+        if(type === 'sqrt') screen.value = Math.sqrt(v).toFixed(4);
+        shouldReset = true;
+    }
+
+    function markUP() { /* MU Logic */ let v = parseFloat(screen.value); screen.value = (v / 0.9).toFixed(2); shouldReset = true; }
+    
+    function checkForward() { if(historyLog.length > 0) { checkIndex = (checkIndex + 1) % historyLog.length; screen.value = historyLog[checkIndex]; } }
+    function checkBackward() { if(historyLog.length > 0) { checkIndex = (checkIndex - 1 + historyLog.length) % historyLog.length; screen.value = historyLog[checkIndex]; } }
 
     function addAsIncome() {
         playClick();
         income += parseFloat(screen.value) || 0;
         updateUI();
-        alert("Added to Dashboard!");
+        alert("Income Added to Dashboard!");
     }
 
     function updateUI() {
-        document.getElementById('dash-in').innerText = "₹" + income;
-        document.getElementById('dash-gt').innerText = "₹" + gtMemory;
-        document.getElementById('history-list').innerHTML = historyLog.slice(0,5).map(h => `<div>${h}</div>`).join('');
+        document.getElementById('dash-in').innerText = "₹" + income.toFixed(2);
+        document.getElementById('dash-gt').innerText = "₹" + gtMemory.toFixed(2);
+        document.getElementById('history-list').innerHTML = historyLog.slice(0, 10).map(h => `<div class="history-item">${h}</div>`).join('');
     }
 
-    function clearAll() { screen.value = "0"; historyLog = []; updateUI(); }
-    
-    // SW Register
-    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
+    function clearAll() { playClick(); screen.value = "0"; gtMemory = 0; mMemory = 0; gtInd.style.visibility = "hidden"; mInd.style.visibility = "hidden"; historyLog = []; updateUI(); }
 </script>
 </body>
 </html>
